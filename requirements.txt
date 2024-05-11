@@ -1,5 +1,6 @@
-flask
-isort
-black
-flake8
-pre-commit
+flask==3.0.3
+isort==5.13.2
+black==24.4.2
+flake8==7.0.0
+pre-commit==3.7.1
+mysql-connector-python==8.4.0
