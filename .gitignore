@@ -1,0 +1,20 @@
+# Virtual environment
+venv/
+
+# Compiled Python files
+*.pyc
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Dependency directories
+__pycache__/
+node_modules/
