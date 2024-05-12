@@ -1,17 +1,8 @@
-from flask import Flask, jsonify
+from flask import Flask
 
-from app.models.database import get_database_connection, get_products
+from app import init_app
 
-app = Flask(__name__)
-
-
-connect_database = get_database_connection()
-
-
-@app.route("/products")
-def get_all_products():
-    product = get_products()
-    return jsonify(product)
+app = init_app()
 
 
 if __name__ == "__main__":
