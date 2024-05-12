@@ -2,7 +2,7 @@
 
 <!--- Tại sao? lại mở PR này -->
 
-Fixes: 
+Fixes:
 
 ## What
 
@@ -11,4 +11,3 @@ Fixes:
 ## Other Information
 
 <!--- Ghi thêm các thông tin liên quan đến PR này, và các hình ảnh nếu có -->
-
