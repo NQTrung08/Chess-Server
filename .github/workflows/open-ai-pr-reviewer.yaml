@@ -1,4 +1,4 @@
-name: StuyTogether OpenAI PR reviewer
+name: T3G TEAM OpenAI PR reviewer
 
 on:
   pull_request:
