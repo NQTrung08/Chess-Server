@@ -1,4 +1,4 @@
-name: T3G TEAM OpenAI PR reviewer
+name: T3G Team OpenAI PR reviewer
 
 on:
   pull_request:
