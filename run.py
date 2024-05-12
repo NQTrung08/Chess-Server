@@ -1,11 +1,15 @@
+import mysql.connector
 from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-
-@app.route("/hello")
-def hello():
-    return jsonify(message="Hello, World!")
+# Connect to MySQL database
+db = mysql.connector.connect(
+    host="localhost",
+    user="username",
+    password="password",
+    database="chess_local",
+)
 
 
 if __name__ == "__main__":
