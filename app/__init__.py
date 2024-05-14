@@ -1,10 +1,15 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 from app.controllers.pagination_controllers import get_poduct_paginate
 from app.controllers.product_controllers import (
+    create_product_controllers,
+    delete_product_controller,
     get_product_controllers,
     get_products_controllers,
+    search_products_controllers,
+    update_product_controllers,
 )
+from app.models.database import get_database_connection
 
 
 def init_app():
@@ -20,9 +25,29 @@ def init_app():
         product = get_product_controllers(product_id)
         return jsonify({"product": product})
 
+    @app.route("/cproduct", methods=["POST"])
+    def create_product():
+        product = create_product_controllers()
+        return jsonify(product)
+
+    @app.route("/uproduct/<int:product_id>", methods=["PUT"])
+    def update_product(product_id):
+        product = update_product_controllers(product_id)
+        return jsonify(product)
+
+    @app.route("/dproduct/<int:product_id>", methods=["DELETE"])
+    def delete_product(product_id):
+        product = delete_product_controller(product_id)
+        return jsonify(product)
+
     @app.route("/sale", methods=["GET"])
     def get_paginate():
         products = get_poduct_paginate()
+        return jsonify(products)
+
+    @app.route("/products/search", methods=["POST"])
+    def search_products():
+        products = search_products_controllers()
         return jsonify(products)
 
     return app
