@@ -14,8 +14,9 @@ __pycache__
 
 # IDE-specific files
 .vscode/
+.vscode
 .idea/
 
 # Dependency directories
-__pycache__/
 node_modules/
+node_modules
