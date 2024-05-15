@@ -6,6 +6,7 @@ venv/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+__pycache__
 
 # Logs and databases
 *.log
@@ -13,8 +14,9 @@ __pycache__/
 
 # IDE-specific files
 .vscode/
+.vscode
 .idea/
 
 # Dependency directories
-__pycache__/
 node_modules/
+node_modules
