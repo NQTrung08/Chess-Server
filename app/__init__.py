@@ -1,5 +1,8 @@
 from flask import Flask, jsonify, request
+from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 
+from app.controllers.customer_controllers import login, register
 from app.controllers.pagination_controllers import get_poduct_paginate
 from app.controllers.product_controllers import (
     create_product_controllers,
@@ -14,16 +17,17 @@ from app.models.database import get_database_connection
 
 def init_app():
     app = Flask(__name__)
+    CORS(app)
 
     @app.route("/products", methods=["GET"])
     def get_all_products():
         products = get_products_controllers()
-        return jsonify({"products": products})
+        return jsonify(products)
 
     @app.route("/product/<int:product_id>", methods=["GET"])
     def get_product(product_id):
         product = get_product_controllers(product_id)
-        return jsonify({"product": product})
+        return jsonify(product)
 
     @app.route("/cproduct", methods=["POST"])
     def create_product():
@@ -49,5 +53,15 @@ def init_app():
     def search_products():
         products = search_products_controllers()
         return jsonify(products)
+
+    @app.route("/register", methods=["POST"])
+    def register_user():
+        user = register()
+        return user
+
+    @app.route("/login", methods=["POST"])
+    def login_user():
+        user = login()
+        return user
 
     return app

@@ -23,14 +23,15 @@ def get_product_controllers(product_id):
         connection = get_database_connection()
 
         cursor = connection.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM products WHERE id = {product_id}")
-        product_id = cursor.fetchall()
+        # Use parameterized query to prevent SQL injection
+        cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
+        product = cursor.fetchone()  # Fetch one product, assuming id is unique
         cursor.close()
         connection.close()
-        return product_id
-
-    except mysql.connector.Error as err:
-        print("Error retrieving products:", err)
+        return product
+    except Exception as e:
+        # You may want to log the error or raise a custom exception
+        print(f"An error occurred: {e}")
         return None
 
 
