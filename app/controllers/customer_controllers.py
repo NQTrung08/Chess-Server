@@ -56,7 +56,13 @@ def register():
         )
         connection.commit()
 
-        return jsonify({"message": "User registered successfully"}), 200
+        cursor.execute("SELECT * FROM customers WHERE email = %s", (email,))
+        user = cursor.fetchone()
+
+        return (
+            jsonify({"message": "User registered successfully", "data": user}),
+            200,
+        )
     except Error as e:
         connection.rollback()
         return jsonify({"error": str(e)}), 500
