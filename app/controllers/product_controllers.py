@@ -21,7 +21,6 @@ def get_products_controllers():
 def get_product_controllers(product_id):
     try:
         connection = get_database_connection()
-
         cursor = connection.cursor(dictionary=True)
         # Use parameterized query to prevent SQL injection
         cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
@@ -171,3 +170,29 @@ def search_products_controllers():
     except mysql.connector.Error as err:
         print("Error retrieving products:", err)
         return None
+
+def update_discount_controller(product_id, discount):
+    conn = get_database_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("UPDATE product SET discount = %s WHERE id = %s", (discount, product_id))
+        conn.commit()
+        return {"message": "Discount updated successfully"}
+    except Exception as e:
+        return {"message": str(e)}
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_discount_controller(product_id):
+    conn = get_database_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT discount FROM product WHERE id = %s", (product_id,))
+        discount = cursor.fetchone()
+        return {"discount": discount[0]} if discount else {"message": "Product not found"}
+    except Exception as e:
+        return {"message": str(e)}
+    finally:
+        cursor.close()
+        conn.close()

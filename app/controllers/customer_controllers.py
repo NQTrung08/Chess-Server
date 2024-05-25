@@ -7,7 +7,7 @@ from app.models.database import get_database_connection
 
 bcrypt = Bcrypt()
 
-
+# Hàm đăng ký người dùng
 def register():
     data = request.get_json()
 
@@ -64,7 +64,7 @@ def register():
         cursor.close()
         connection.close()
 
-
+# Hàm đăng nhập người dùng
 def login():
     data = request.get_json()
 
@@ -93,3 +93,33 @@ def login():
     finally:
         cursor.close()
         connection.close()
+
+# Hàm lấy danh sách tất cả khách hàng
+def get_all_customers():
+    try:
+        connection = get_database_connection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT id, name, email, role FROM customers")
+        customers = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return jsonify(customers), 200
+    except Error as e:
+        print("Error retrieving customers:", e)
+        return jsonify({"error": str(e)}), 500
+
+# Hàm lấy thông tin một khách hàng
+def get_customer(user_id):
+    try:
+        connection = get_database_connection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT id, name, email, role FROM customers WHERE id = %s", (user_id,))
+        customer = cursor.fetchone()
+        cursor.close()
+        connection.close()
+        return jsonify(customer), 200 if customer else 404
+    except Error as e:
+        print("Error retrieving customer:", e)
+        return jsonify({"error": str(e)}), 500
+
+

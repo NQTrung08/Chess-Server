@@ -2,7 +2,12 @@ from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 
-from app.controllers.customer_controllers import login, register
+from app.controllers.customer_controllers import (
+    login, 
+    register, 
+    get_all_customers, 
+    get_customer
+)
 from app.controllers.pagination_controllers import get_poduct_paginate
 from app.controllers.product_controllers import (
     create_product_controllers,
@@ -11,6 +16,8 @@ from app.controllers.product_controllers import (
     get_products_controllers,
     search_products_controllers,
     update_product_controllers,
+    update_discount_controller,
+    get_discount_controller
 )
 from app.models.database import get_database_connection
 
@@ -18,6 +25,10 @@ from app.models.database import get_database_connection
 def init_app():
     app = Flask(__name__)
     CORS(app)
+
+    @app.route("/", methods=["GET"])
+    def get_hello():
+        return jsonify("hello world")
 
     @app.route("/products", methods=["GET"])
     def get_all_products():
@@ -64,4 +75,32 @@ def init_app():
         user = login()
         return user
 
+    # Các route mới cho quản lý khách hàng
+    @app.route("/customers", methods=["GET"])
+    def get_customers():
+        return get_all_customers()
+
+    @app.route("/customer/<int:user_id>", methods=["GET"])
+    def get_customer_detail(user_id):
+        return get_customer(user_id)
+    
+     # Các route mới cho quản lý discount
+    @app.route("/product/<int:product_id>/discount", methods=["PUT"])
+    def update_discount(product_id):
+        data = request.get_json()
+        discount = data.get('discount')
+        response = update_discount_controller(product_id, discount)
+        return jsonify(response)
+
+    @app.route("/product/<int:product_id>/discount", methods=["GET"])
+    def get_discount(product_id):
+        response = get_discount_controller(product_id)
+        return jsonify(response)
+    
     return app
+
+
+app = init_app()
+
+if __name__ == "__main__":
+    app.run(debug=True)
