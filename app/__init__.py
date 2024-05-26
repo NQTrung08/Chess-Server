@@ -2,7 +2,11 @@ from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 
-from app.controllers.customer_controllers import login, register
+from app.controllers.customer_controllers import (
+    get_customers_controllers,
+    login,
+    register,
+)
 from app.controllers.pagination_controllers import get_poduct_paginate
 from app.controllers.product_controllers import (
     create_product_controllers,
@@ -32,12 +36,12 @@ def init_app():
     @app.route("/cproduct", methods=["POST"])
     def create_product():
         product = create_product_controllers()
-        return jsonify(product)
+        return product
 
     @app.route("/uproduct/<int:product_id>", methods=["PUT"])
     def update_product(product_id):
         product = update_product_controllers(product_id)
-        return jsonify(product)
+        return product
 
     @app.route("/dproduct/<int:product_id>", methods=["DELETE"])
     def delete_product(product_id):
@@ -63,5 +67,10 @@ def init_app():
     def login_user():
         user = login()
         return user
+
+    @app.route("/customers", methods=["GET"])
+    def get_customers():
+        customers = get_customers_controllers()
+        return jsonify(customers)
 
     return app
