@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 
+from app.chat_controllers import get_response
 from app.controllers.customer_controllers import (
     get_customers_controllers,
     login,
@@ -72,5 +73,10 @@ def init_app():
     def get_customers():
         customers = get_customers_controllers()
         return jsonify(customers)
+
+    @app.route("/predict", methods=["POST"])
+    def chatbot():
+        response = get_response()
+        return jsonify({"response": response})
 
     return app
