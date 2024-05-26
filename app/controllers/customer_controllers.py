@@ -99,3 +99,13 @@ def login():
     finally:
         cursor.close()
         connection.close()
+
+
+def get_customers_controllers():
+    connection = get_database_connection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM customers")
+    customers = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return customers
