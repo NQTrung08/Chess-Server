@@ -1,5 +1,5 @@
 import mysql.connector
-from flask import request
+from flask import jsonify, request
 
 from app.models.database import get_database_connection
 
@@ -40,15 +40,21 @@ def create_product_controllers():
         connection = get_database_connection()
         cursor = connection.cursor(dictionary=True)
         data = request.get_json()
-        name = data.get("name", "")
+
+        name = data.get("name", "").strip()
         price = data.get("price", "")
-        description = data.get("description", "")
+        description = data.get("description", "").strip()
         stock_quantity = data.get("stock_quantity", "")
-        photo = data.get("photo", "")
+        photo = data.get("photo", "").strip()
         featured = data.get("featured", False)
 
-        if not all([name, price, stock_quantity, photo, featured]):
-            return {"message": "A fields are required"}, 400
+        if not name or not price or not stock_quantity:
+            return (
+                jsonify(
+                    {"message": "Name, price, and stock quantity are required"}
+                ),
+                400,
+            )
 
         try:
             price = float(price)
@@ -62,17 +68,22 @@ def create_product_controllers():
             return {"error": "Stock quantity cannot be negative"}, 400
 
         cursor.execute(
-            "INSERT INTO products (name, price, description, stock_quantity, photo, featured) VALUES (%s, %s, %s, %s, %s, %s,)",
+            "INSERT INTO products (name, price, description, stock_quantity, photo, featured) VALUES (%s, %s, %s, %s, %s, %s)",
             (name, price, description, stock_quantity, photo, featured),
         )
 
         connection.commit()
+
+        # cursor.execute("SELECT * FROM products WHERE name = %s", (name,))
+        # product = cursor.fetchone()
+
         cursor.close()
         connection.close()
+        # return {"message": "Product created successfully", "product": product}
         return {"message": "Product created successfully"}
     except mysql.connector.Error as err:
         print("Error creating product:", err)
-        return None
+        return {"message": "Error creating product"}, 500
 
 
 def update_product_controllers(product_id):
@@ -80,15 +91,18 @@ def update_product_controllers(product_id):
         connection = get_database_connection()
         cursor = connection.cursor(dictionary=True)
         data = request.get_json()
-        name = data.get("name", "")
-        price = data.get("price", "")
-        description = data.get("description", "")
-        stock_quantity = data.get("stock_quantity", "")
-        photo = data.get("photo", "")
+
+        name = data.get("name", "").strip()
+        price = data.get("price")
+        description = data.get("description", "").strip()
+        stock_quantity = data["stock_quantity"]
+        photo = data.get("photo", "").strip()
         featured = data.get("featured", False)
 
-        if not all([name, price, stock_quantity, photo, featured]):
-            return {"message": "A fields are required"}, 400
+        if name == "" or price == "" or stock_quantity == "":
+            return {
+                "message": "Name, price, and stock quantity are required"
+            }, 400
 
         try:
             price = float(price)
@@ -98,15 +112,15 @@ def update_product_controllers(product_id):
                 "error": "Price and stock quantity must be numeric values"
             }, 400
 
-        if stock_quantity < 0:
+        if stock_quantity < 0 or stock_quantity == 0:
             return {"error": "Stock quantity cannot be negative"}, 400
 
         update_query = """
-                UPDATE products
-                SET name = %s, price = %s, description = %s,
-                    stock_quantity = %s, photo = %s, featured = %s
-                WHERE id = %s
-            """
+            UPDATE products
+            SET name = %s, price = %s, description = %s,
+                stock_quantity = %s, photo = %s, featured = %s
+            WHERE id = %s
+        """
         cursor.execute(
             update_query,
             (
@@ -120,20 +134,19 @@ def update_product_controllers(product_id):
             ),
         )
         connection.commit()
-        cursor.execute(f"SELECT * FROM products WHERE id = {product_id}")
-        update_product = cursor.fetchone()
+        cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
+        updated_product = cursor.fetchone()
         cursor.close()
         connection.close()
 
         return {
             "message": "Product updated successfully",
             "status": 200,
-            "update_product": update_product,
+            "updated_product": updated_product,
         }
-
     except mysql.connector.Error as err:
         print("Error updating product:", err)
-        return None
+        return {"message": "Error updating product"}, 500
 
 
 def delete_product_controller(product_id):
