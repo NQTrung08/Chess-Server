@@ -43,6 +43,7 @@ def create_product_controllers():
 
         name = data.get("name", "").strip()
         price = data.get("price", "")
+        discount = data.get("discount", "")
         description = data.get("description", "").strip()
         stock_quantity = data.get("stock_quantity", "")
         photo = data.get("photo", "").strip()
@@ -58,6 +59,7 @@ def create_product_controllers():
 
         try:
             price = float(price)
+            discount = int(discount)
             stock_quantity = int(stock_quantity)
         except ValueError:
             return {
@@ -68,8 +70,16 @@ def create_product_controllers():
             return {"error": "Stock quantity cannot be negative"}, 400
 
         cursor.execute(
-            "INSERT INTO products (name, price, description, stock_quantity, photo, featured) VALUES (%s, %s, %s, %s, %s, %s)",
-            (name, price, description, stock_quantity, photo, featured),
+            "INSERT INTO products (name, price, discount, description, stock_quantity, photo, featured) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (
+                name,
+                price,
+                discount,
+                description,
+                stock_quantity,
+                photo,
+                featured,
+            ),
         )
 
         connection.commit()
@@ -94,6 +104,7 @@ def update_product_controllers(product_id):
 
         name = data.get("name", "").strip()
         price = data.get("price")
+        discount = data.get("discount")
         description = data.get("description", "").strip()
         stock_quantity = data["stock_quantity"]
         photo = data.get("photo", "").strip()
@@ -106,18 +117,19 @@ def update_product_controllers(product_id):
 
         try:
             price = float(price)
+            discount = float(discount)
             stock_quantity = int(stock_quantity)
         except ValueError:
             return {
                 "error": "Price and stock quantity must be numeric values"
             }, 400
 
-        if stock_quantity < 0 or stock_quantity == 0:
+        if stock_quantity < 0:
             return {"error": "Stock quantity cannot be negative"}, 400
 
         update_query = """
             UPDATE products
-            SET name = %s, price = %s, description = %s,
+            SET name = %s, price = %s, discount = %s, description = %s,
                 stock_quantity = %s, photo = %s, featured = %s
             WHERE id = %s
         """
@@ -126,6 +138,7 @@ def update_product_controllers(product_id):
             (
                 name,
                 price,
+                discount,
                 description,
                 stock_quantity,
                 photo,
